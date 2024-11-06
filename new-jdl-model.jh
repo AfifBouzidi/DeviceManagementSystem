@@ -1,0 +1,172 @@
+
+application {
+  config {
+    baseName myApp
+    applicationType monolith
+    packageName com.afb.logi
+    authenticationType jwt
+    prodDatabaseType postgresql
+    clientFramework angularX
+  }
+  entities *
+}
+
+entity Vehicle {
+  VehicleID Integer,
+  VIN String,
+  Make String,
+  Model String,
+  Year Integer,
+  LicensePlate String,
+  Type String,
+  Color String,
+  Mileage Integer,
+  LoanStartDate LocalDate,
+  LoanEndDate LocalDate,
+  Status String
+}
+
+entity Driver {
+  DriverID Integer,
+  LicenseNumber String,
+  LicenseType String,
+  LicenseExpiration LocalDate,
+  PhoneNumber String,
+  Email String,
+  Address String,
+  HireDate LocalDate,
+  Status String,
+  DepartmentID Integer
+}
+
+entity Department {
+  DepartmentID Integer,
+  DepartmentName String,
+  RegionID Integer,
+  ManagerID Integer
+}
+
+entity Region {
+  RegionID Integer,
+  RegionName String,
+  CountryID Integer,
+  CityID Integer
+}
+
+entity Country {
+  CountryID Integer,
+  CountryName String
+}
+
+entity City {
+  CityID Integer,
+  CityName String,
+  CountryID Integer
+}
+
+entity District {
+  DistrictID Integer,
+  DistrictName String,
+  RegionID Integer
+}
+
+entity Provider {
+  ProviderID Integer,
+  Name String,
+  ContactNumber String,
+  Address String,
+  ProviderTypeID Integer
+}
+
+entity ProviderType {
+  ProviderTypeID Integer,
+  TypeName String
+}
+
+entity Contract {
+  ContractID Integer,
+  ContractTypeID Integer,
+  StartDate LocalDate,
+  EndDate LocalDate,
+  Terms String,
+  ProviderID Integer
+}
+
+entity ContractType {
+  ContractTypeID Integer,
+  TypeName String
+}
+
+entity ServiceRecord {
+  ServiceRecordID Integer,
+  ServiceDate LocalDate,
+  Description String,
+  Cost Float,
+  VehicleID Integer
+}
+
+entity FuelEntry {
+  FuelEntryID Integer,
+  FuelDate LocalDate,
+  Quantity Float,
+  Cost Float,
+  VehicleID Integer,
+  ProviderID Integer
+}
+
+entity Violation {
+  ViolationID Integer,
+  ViolationTypeID Integer,
+  Date LocalDate,
+  Description String,
+  FineAmount Float,
+  Status String,
+  DriverID Integer,
+  VehicleID Integer,
+  ViolationDetails String
+}
+
+entity ViolationType {
+  ViolationTypeID Integer,
+  TypeName String
+}
+
+entity DriverDemand {
+  DemandID Integer,
+  DemandTypeID Integer,
+  StartDate LocalDate,
+  EndDate LocalDate,
+  HoursRequested Integer,
+  Description String,
+  ApprovalStatus String,
+  ApprovalDate LocalDate,
+  DriverID Integer
+}
+
+entity DemandType {
+  DemandTypeID Integer,
+  TypeName String
+}
+
+relationship OneToMany {
+  Vehicle{ProviderID} to Provider
+  Vehicle{ServiceRecord} to ServiceRecord
+  Vehicle{FuelEntry} to FuelEntry
+  Vehicle{Violation} to Violation
+  Vehicle{Contract} to Contract
+  Driver{Violation} to Violation
+  Driver{DriverDemand} to DriverDemand
+  Department{RegionID} to Region
+  Region{CountryID} to Country
+  Region{CityID} to City
+  Region{DistrictID} to District
+  Violation{ViolationTypeID} to ViolationType
+  DriverDemand{DemandTypeID} to DemandType
+  Contract{ContractTypeID} to ContractType
+  Provider{ProviderTypeID} to ProviderType
+}
+
+relationship ManyToOne {
+  Driver{DepartmentID} to Department
+}
+
