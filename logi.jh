@@ -1,0 +1,223 @@
+application {
+    config {
+        baseName driverManagement,
+        applicationType monolith,
+        authenticationType jwt,
+        databaseType sql,
+        devDatabaseType h2Disk,
+        prodDatabaseType postgresql,
+        buildTool maven,
+        clientFramework angular,
+        enableTranslation true,
+        nativeLanguage en,
+        languages [en, ar]
+    }
+    entities *
+}
+
+enum RoleEnum {
+    Admin,
+    Supervisor,
+    Driver
+}
+
+entity Role {
+    name RoleEnum required
+}
+
+entity Profile {
+    firstName String,
+    lastName String,
+    phone String
+}
+
+relationship OneToOne {
+    Profile { user(login) } to User with builtInEntity
+}
+
+relationship ManyToMany {
+    Profile { roles } to Role { profiles }
+}
+
+entity DriverDetail {
+    imei String,
+    mobile String,
+    mobileToken String,
+    mobileType String,
+    name String,
+    online Boolean required,
+    orgId Long,
+    collectionAmount BigDecimal,
+    lastSettlementDate Instant,
+    numberOfDispatch Long,
+    ceased Boolean,
+    playerId String,
+    dateCreated Instant,
+    dateModified Instant,
+    terminalId Long,
+    posSerialNumber String,
+    deliveryPrice Double,
+    nationality String,
+    idType String,
+    idNumber String,
+    dateOfBirth Instant,
+    carType String,
+    carNumber String,
+    nationalExpiryDate Instant,
+    cityName String,
+    citcValidated Boolean,
+    rejectedCount Long,
+    dispatchRejectedDate Instant,
+    dateOfBirthNew String,
+    nationalExpiryDateNew String,
+    citcApprovalStatus String,
+    isVerified Boolean,
+    fileContent String,
+    oneSignalToken String,
+    isAllowedForNewPortal Boolean,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity Tag {
+    createdBy String,
+    createdDate Instant,
+    lastModifiedBy String,
+    modifiedDate Instant,
+    name String required,
+    exclusiveTag Boolean,
+    exclusiveStoreTag Boolean,
+    inputs String,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity DriversTags {
+    driversTag Long,
+    tagPriority Long,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity DriverVehicle {
+    isBike Boolean,
+    plateNumber String,
+    brand String,
+    createdDate Instant,
+    plateNumberAr String,
+    brandAr String,
+    typeId Long,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity DriverLocation {
+    utc Long,
+    jobs Long,
+    status String,
+    lat Double,
+    lon Double,
+    dispStrArray String,
+    orgId Long,
+    receivedAt Instant
+}
+
+entity DriverAccount {
+    mobileNumber String required,
+    netAmount Double required,
+    totalCashAmount Double required,
+    totalDriverDebit Double required,
+    totalServiceDeduction Double required,
+    totalDeliveryPrice Double required,
+    totalDriverCredit Double required,
+    totalBonuses Double required,
+    totalTips Double required,
+    totalFreeOrders Double required,
+    totalPenalties Double required,
+    totalDriverSettlement Double required,
+    totalOrgSettlement Double required,
+    createdDate Instant,
+    createdBy String,
+    modifiedDate Instant,
+    modifiedBy String,
+    deletedDate Instant,
+    deletedBy String,
+    isDeleted Boolean,
+    orgId Long,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity Violation {
+    description String,
+    date Instant,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity ViolationType {
+    name String required
+}
+
+entity Demand {
+    description String,
+    date Instant,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity DemandType {
+    name String required
+}
+
+entity Shift {
+    shiftName String required,
+    startTime Instant,
+    endTime Instant,
+    dayOff String,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity Department {
+    name String required,
+    code String,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+entity Company {
+    name String required,
+    address String,
+    phone String,
+    email String,
+    countryCode String required,
+    insertedAt Instant,
+    updatedAt Instant
+}
+
+relationship OneToMany {
+    DriverDetail { vehicles } to DriverVehicle { driver },
+    DriverDetail { locations } to DriverLocation { driver },
+    DriverDetail { tags } to Tag { drivers }
+}
+
+relationship OneToOne {
+    DriverDetail { account } to DriverAccount
+}
+
+relationship ManyToOne {
+    Department { company } to Company,
+    Shift { department } to Department,
+    DriverDetail { org } to Department
+}
+
+relationship ManyToMany {
+    Violation { type } to ViolationType { violations },
+    Demand { type } to DemandType { demands }
+}
+
+paginate Role, Profile, DriverDetail, Tag, DriverVehicle, DriverLocation, DriverAccount, Company, Department, Shift, Violation, Demand with pagination
+dto * with mapstruct
+service * with serviceImpl
+filter *
